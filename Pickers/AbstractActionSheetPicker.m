@@ -39,7 +39,6 @@ CG_INLINE BOOL isIPhone4() {
 }
 
 #define IS_WIDESCREEN ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
-#define IS_IPAD UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
 #define DEVICE_ORIENTATION [UIDevice currentDevice].orientation
 
 // UIInterfaceOrientationMask vs. UIInterfaceOrientation
@@ -55,14 +54,6 @@ CG_INLINE BOOL isIPhone4() {
 
 @implementation MyPopoverController
 + (BOOL)canShowPopover {
-    if (IS_IPAD) {
-        if ([UITraitCollection class]) {
-            UITraitCollection *traits = [UIApplication sharedApplication].keyWindow.traitCollection;
-            if (traits.horizontalSizeClass == UIUserInterfaceSizeClassCompact)
-                return NO;
-        }
-        return YES;
-    }
     return NO;
 }
 
@@ -78,7 +69,7 @@ CG_INLINE BOOL isIPhone4() {
 
 @implementation MyPopoverController
 +(BOOL)canShowPopover {
-    return IS_IPAD;
+    return NO;
 }
 @end
 
@@ -145,8 +136,6 @@ CG_INLINE BOOL isIPhone4() {
                             [UIApplication sharedApplication].keyWindow];
         else {
             self.supportedInterfaceOrientations = UIInterfaceOrientationMaskAllButUpsideDown;
-            if (IS_IPAD)
-                self.supportedInterfaceOrientations |= (1 << UIInterfaceOrientationPortraitUpsideDown);
         }
 #pragma clang diagnostic pop
 
@@ -624,12 +613,6 @@ CG_INLINE BOOL isIPhone4() {
 #pragma mark - Utilities and Accessors
 
 - (CGSize)viewSize {
-    if (IS_IPAD) {
-        if (!self.popoverDisabled && [MyPopoverController canShowPopover])
-            return CGSizeMake(320, 320);
-        return [UIApplication sharedApplication].keyWindow.bounds.size;
-    }
-
 #if defined(__IPHONE_8_0)
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
         //iOS 7.1 or earlier
